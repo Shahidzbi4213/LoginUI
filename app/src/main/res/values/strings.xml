@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Login UI</string>
+    <string name="loopr">Loopr\n</string>
+    <string name="food_delivery_service">Food Delivery Services</string>
+    <string name="aliments">aliments</string>
+
+    <string name="page1_title">Best Prices &amp; Deals</string>
+    <string name="page2_title">Track your Orders</string>
+    <string name="page3_title">Free and Fast Delivery</string>
+
+    <string name="page1_description">Find your favorite Meals at the best prices with exclusive deals only on aliments app.</string>
+    <string name="page2_description">Track your orders in realtime from the app</string>
+    <string name="page3_description">Free and fast delivery for all meals above ₹100.</string>
+    <string name="login">Login</string>
+    <string name="create_an_account">Create an account</string>
+</resources>
