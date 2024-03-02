@@ -7,6 +7,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -18,9 +21,13 @@ import androidx.compose.ui.Modifier
 import com.gulehri.loginui.screen.NavGraphs
 import com.gulehri.loginui.screen.OnBoardingScreen
 import com.gulehri.loginui.screen.SplashScreen
+import com.gulehri.loginui.screen.destinations.SplashScreenDestination
 import com.gulehri.loginui.ui.theme.LoginUITheme
 import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.animations.defaults.NestedNavGraphDefaultAnimations
+import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.annotation.NavGraph
+import com.ramcosta.composedestinations.rememberNavHostEngine
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -45,7 +52,17 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    DestinationsNavHost(navGraph = NavGraphs.root)
+                    val engine = rememberNavHostEngine(
+                        rootDefaultAnimations = RootNavGraphDefaultAnimations(
+                            enterTransition = { fadeIn(animationSpec = tween(800)) },
+                            exitTransition = { fadeOut(animationSpec = tween(800)) }
+                        )
+                    )
+
+                    DestinationsNavHost(
+                        navGraph = NavGraphs.root,
+                        engine = engine
+                    )
 
 
                 }

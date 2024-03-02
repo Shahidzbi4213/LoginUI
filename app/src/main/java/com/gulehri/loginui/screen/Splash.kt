@@ -46,12 +46,8 @@ fun SplashScreen(navigator: DestinationsNavigator) {
     LaunchedEffect(key1 = Unit, block = {
         delay(3.seconds)
 
-
-        navigator.navigate(OnBoardingScreenDestination, builder = {
-            popUpTo(SplashScreenDestination) {
-                inclusive = true
-            }
-        })
+        navigator.navigate(OnBoardingScreenDestination,
+            builder = { popUpTo(SplashScreenDestination) { inclusive = true } })
     })
 
     ConstraintLayout(
@@ -60,7 +56,9 @@ fun SplashScreen(navigator: DestinationsNavigator) {
             .fillMaxSize()
     ) {
 
-        val (logo, title, description, bottomIcon, bottomText) = createRefs()
+        val (logo, title,
+            description, bottomIcon,
+            bottomText) = createRefs()
 
 
         Image(painter = painterResource(id = R.drawable.splash_icon),
