@@ -40,6 +40,7 @@ import com.gulehri.loginui.ui.theme.GrayDeep
 import com.gulehri.loginui.ui.theme.Header
 import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.OrangeMain
+import com.ramcosta.composedestinations.annotation.Destination
 
 /*
  * Created by Shahid Iqbal on 2/28/2024.
@@ -56,6 +57,7 @@ val pagesList = listOf<OnboardItem>(
 )
 
 
+@Destination
 @ExperimentalFoundationApi
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -80,13 +82,15 @@ fun OnBoardingScreen(modifier: Modifier = Modifier) {
             SinglePage(onboardItem = pagesList[it], modifier = Modifier.fillMaxSize())
         }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White).
-            padding(bottom = 30.dp),
-            horizontalArrangement = Arrangement.Center) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(bottom = 30.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
             repeat(3) {
-                PageIndicator( it == pagerState.currentPage)
+                PageIndicator(it == pagerState.currentPage)
             }
         }
 
@@ -98,12 +102,11 @@ fun OnBoardingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PageIndicator(selected:Boolean) {
+fun PageIndicator(selected: Boolean) {
 
     Canvas(modifier = Modifier.size(20.dp), onDraw = {
 
-        drawCircle(color = if (selected) OrangeMain else GrayDeep,
-            15f)
+        drawCircle(color = if (selected) OrangeMain else GrayDeep, 15f)
 
     })
 }

@@ -1,5 +1,6 @@
 package com.gulehri.loginui.screen;
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,10 +18,17 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.gulehri.loginui.R
+import com.gulehri.loginui.screen.destinations.OnBoardingScreenDestination
+import com.gulehri.loginui.screen.destinations.SplashScreenDestination
 import com.gulehri.loginui.ui.theme.Header
 import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.loginFontFamily
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 /*
  * Created by Shahid Iqbal on 2/21/2024.
@@ -29,8 +37,23 @@ import kotlinx.coroutines.delay
 
 
 
+@OptIn(ExperimentalFoundationApi::class)
+@RootNavGraph(true)
+@Destination
 @Composable
-fun SplashScreen() {
+fun SplashScreen(navigator: DestinationsNavigator) {
+
+    LaunchedEffect(key1 = Unit, block = {
+        delay(3.seconds)
+
+
+        navigator.navigate(OnBoardingScreenDestination, builder = {
+            popUpTo(SplashScreenDestination) {
+                inclusive = true
+            }
+        })
+    })
+
     ConstraintLayout(
         Modifier
             .background(brush = MainGradient)

@@ -15,9 +15,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import com.gulehri.loginui.screen.NavGraphs
 import com.gulehri.loginui.screen.OnBoardingScreen
 import com.gulehri.loginui.screen.SplashScreen
 import com.gulehri.loginui.ui.theme.LoginUITheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.annotation.NavGraph
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -42,14 +45,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    if (viewModel.moveNow)
-                         OnBoardingScreen()
-                    else SplashScreen()
+                    DestinationsNavHost(navGraph = NavGraphs.root)
 
-                   LaunchedEffect(key1 = Unit, block = {
-                       delay(3000)
-                       viewModel.updateMove()
-                   })
+
                 }
             }
         }
