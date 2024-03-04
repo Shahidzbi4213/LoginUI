@@ -5,6 +5,9 @@
       <entry key="LoginScreen">
         <State />
       </entry>
+      <entry key="LoginWithEmail">
+        <State />
+      </entry>
       <entry key="SplashScreen">
         <State />
       </entry>
