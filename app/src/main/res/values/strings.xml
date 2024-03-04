@@ -13,4 +13,8 @@
     <string name="page3_description">Free and fast delivery for all meals above ₹100.</string>
     <string name="login">Login</string>
     <string name="create_an_account">Create an account</string>
+    <string name="login_account">Login Account</string>
+    <string name="welcome_back">Hello, welcome back to our account</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
 </resources>

@@ -14,6 +14,7 @@ val GrayDeep = Color(0xFF979797)
 val DescriptionColor = Color(0xFF595959)
 val OtpBoxColorSelected = Color(0xFFE5C0C0)
 val Black = Color(0xFF161616)
+val TabUnSeleced = Color(0xFF4F4F4F)
 
 private val OrangeLight = Color(0xFFFF9B63)
 private val OrangeLDeep = Color(0xC9FF621F)

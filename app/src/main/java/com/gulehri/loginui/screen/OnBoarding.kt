@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gulehri.loginui.R
+import com.gulehri.loginui.screen.destinations.LoginScreenDestination
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
@@ -40,7 +43,9 @@ import com.gulehri.loginui.ui.theme.GrayDeep
 import com.gulehri.loginui.ui.theme.Header
 import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.OrangeMain
+import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 /*
  * Created by Shahid Iqbal on 2/28/2024.
@@ -61,7 +66,10 @@ val pagesList = listOf<OnboardItem>(
 @ExperimentalFoundationApi
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingScreen(modifier: Modifier = Modifier) {
+fun OnBoardingScreen(
+    modifier: Modifier = Modifier,
+    navigator: DestinationsNavigator
+) {
 
 
     val pagerState = rememberPagerState(pageCount = { pagesList.size })
@@ -94,7 +102,10 @@ fun OnBoardingScreen(modifier: Modifier = Modifier) {
             }
         }
 
-        BottomButtons(modifier = Modifier.weight(0.75f), onLoginClick = {}, onCreate = {})
+        BottomButtons(modifier = Modifier.weight(0.75f),
+            onLoginClick = {
+                navigator.navigate(LoginScreenDestination)
+            }, onCreate = {})
 
 
     }
@@ -125,6 +136,7 @@ fun BottomButtons(
 
         Button(
             onClick = onLoginClick,
+            interactionSource = NoRippleInteractionSource(),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White, contentColor = Color.Black
@@ -145,6 +157,7 @@ fun BottomButtons(
         Button(
             onClick = onCreate,
             shape = RoundedCornerShape(10.dp),
+            interactionSource = NoRippleInteractionSource(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Black, contentColor = Color.White
             ),
@@ -168,7 +181,9 @@ fun BottomButtons(
 fun SinglePage(onboardItem: OnboardItem, modifier: Modifier = Modifier) {
 
     Column(
-        modifier.background(Color.White), Arrangement.Center, Alignment.CenterHorizontally
+        modifier.background(Color.White),
+        Arrangement.Center,
+        Alignment.CenterHorizontally
     ) {
 
         Image(
