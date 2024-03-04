@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gulehri.loginui.R
 import com.gulehri.loginui.screen.destinations.LoginScreenDestination
+import com.gulehri.loginui.screen.destinations.OnBoardingScreenDestination
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
@@ -46,6 +47,7 @@ import com.gulehri.loginui.ui.theme.OrangeMain
 import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 
 /*
  * Created by Shahid Iqbal on 2/28/2024.
@@ -104,7 +106,9 @@ fun OnBoardingScreen(
 
         BottomButtons(modifier = Modifier.weight(0.75f),
             onLoginClick = {
-                navigator.navigate(LoginScreenDestination)
+                navigator.navigate(LoginScreenDestination, builder = {
+                    popUpTo(OnBoardingScreenDestination){inclusive = true}
+                })
             }, onCreate = {})
 
 

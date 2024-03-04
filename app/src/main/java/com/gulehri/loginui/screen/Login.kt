@@ -147,6 +147,8 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 
         if (selectedTabIndex == 1) {
             LoginWithEmail(modifier = Modifier.fillMaxWidth())
+        } else {
+            LoginWithPhone(modifier = Modifier.fillMaxWidth())
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -228,6 +230,7 @@ fun LoginWithGoogleBtn() {
     }
 
 }
+
 
 @Composable
 private fun OrDivider(modifier: Modifier = Modifier) {
@@ -385,6 +388,114 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
 
             Text(
                 text = stringResource(id = R.string.login),
+                style = ButtonTextStyle,
+                textAlign = TextAlign.Center,
+            )
+
+        }
+    }
+
+}
+
+@Composable
+fun LoginWithPhone(modifier: Modifier = Modifier) {
+
+    var phone by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var enableState by remember {
+        mutableStateOf(phone.isNotEmpty())
+    }
+
+    LaunchedEffect(key1 = phone) {
+
+        enableState = phone.isNotEmpty()
+    }
+
+    Column(
+        modifier = modifier.wrapContentHeight(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        TextField(
+            value = phone,
+            onValueChange = { phone = it },
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.phone_number),
+                    style = Description,
+                    color = DescriptionColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            textStyle = Description.copy(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = DescriptionColor,
+            ),
+            leadingIcon = {
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.flag),
+                        contentDescription = null
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.more),
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 7.dp)
+                    )
+                }
+            },
+            shape = RectangleShape,
+            maxLines = 1,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Phone
+            ),
+            colors = customFieldsColors(),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+
+        Button(
+            onClick = {},
+            shape = RoundedCornerShape(10.dp),
+            interactionSource = NoRippleInteractionSource(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.White,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    if (!enableState) MainGradient else Brush.linearGradient(
+                        listOf(
+                            OrangeMain,
+                            OrangeMain
+                        )
+                    )
+                ),
+            enabled = enableState
+
+        ) {
+
+            Text(
+                text = stringResource(id = R.string.request_otp),
                 style = ButtonTextStyle,
                 textAlign = TextAlign.Center,
             )

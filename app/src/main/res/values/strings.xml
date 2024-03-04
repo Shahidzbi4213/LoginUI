@@ -22,4 +22,5 @@
     <string name="or">OR</string>
     <string name="login_with_google">Login with Google</string>
     <string name="not_registered">Not Registered yet?</string>
+    <string name="request_otp">Request OTP</string>
 </resources>
