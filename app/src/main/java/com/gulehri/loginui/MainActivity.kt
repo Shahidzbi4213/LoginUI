@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
+
                     val engine = rememberNavHostEngine(
                         rootDefaultAnimations = RootNavGraphDefaultAnimations(
                             enterTransition = { fadeIn(animationSpec = tween(800)) },

@@ -1,5 +1,6 @@
 package com.gulehri.loginui.screen
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -35,9 +37,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -70,6 +75,7 @@ import com.gulehri.loginui.ui.theme.OrangeMain
 import com.gulehri.loginui.ui.theme.TabUnSelected
 import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.gulehri.loginui.utils.customFieldsColors
+import com.gulehri.loginui.utils.getCountries
 import com.gulehri.loginui.utils.noRippleClickable
 import com.ramcosta.composedestinations.annotation.Destination
 
@@ -86,6 +92,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     var selectedTabIndex by remember {
         mutableIntStateOf(0)
     }
+
 
     Column(
         modifier = modifier
@@ -127,8 +134,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .height(60.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(color = GrayUnSelected),
-            verticalAlignment = Alignment.CenterVertically
+                .background(color = GrayUnSelected), verticalAlignment = Alignment.CenterVertically
         ) {
 
             tabs.forEachIndexed { index, tab ->
@@ -198,8 +204,7 @@ fun LoginWithGoogleBtn() {
         onClick = { },
         interactionSource = NoRippleInteractionSource(),
         colors = CardDefaults.cardColors(
-            contentColor = Color.Black,
-            containerColor = Color.White
+            contentColor = Color.Black, containerColor = Color.White
         ),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
 
@@ -242,10 +247,7 @@ private fun OrDivider(modifier: Modifier = Modifier) {
     ) {
 
         HorizontalDivider(
-            modifier = Modifier
-                .weight(1f),
-            thickness = 2.dp,
-            color = DividerColor
+            modifier = Modifier.weight(1f), thickness = 2.dp, color = DividerColor
         )
 
         Text(
@@ -257,10 +259,7 @@ private fun OrDivider(modifier: Modifier = Modifier) {
         )
 
         HorizontalDivider(
-            modifier = Modifier
-                .weight(1f),
-            thickness = 2.dp,
-            color = DividerColor
+            modifier = Modifier.weight(1f), thickness = 2.dp, color = DividerColor
         )
     }
 }
@@ -318,8 +317,7 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
             maxLines = 1,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Email
+                imeAction = ImeAction.Done, keyboardType = KeyboardType.Email
             ),
             colors = customFieldsColors(),
             modifier = Modifier.fillMaxWidth()
@@ -350,8 +348,7 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
             maxLines = 1,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Password
+                imeAction = ImeAction.Done, keyboardType = KeyboardType.Password
             ),
             colors = customFieldsColors(),
             modifier = Modifier.fillMaxWidth()
@@ -377,8 +374,7 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
                 .background(
                     if (!enableState) MainGradient else Brush.linearGradient(
                         listOf(
-                            OrangeMain,
-                            OrangeMain
+                            OrangeMain, OrangeMain
                         )
                     )
                 ),
@@ -407,6 +403,12 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
     var enableState by remember {
         mutableStateOf(phone.isNotEmpty())
     }
+
+    var countryPickerState by remember {
+        mutableStateOf(false)
+    }
+
+
 
     LaunchedEffect(key1 = phone) {
 
@@ -444,22 +446,23 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
                 ) {
 
                     Image(
-                        painter = painterResource(id = R.drawable.flag),
-                        contentDescription = null
+                        painter = painterResource(id = R.drawable.flag), contentDescription = null
                     )
-                    Icon(
-                        painter = painterResource(id = R.drawable.more),
+                    Icon(painter = painterResource(id = R.drawable.more),
                         contentDescription = null,
-                        modifier = Modifier.padding(horizontal = 7.dp)
-                    )
+                        modifier = Modifier
+                            .padding(horizontal = 7.dp)
+                            .padding(5.dp)
+                            .noRippleClickable {
+                                countryPickerState = !countryPickerState
+                            })
                 }
             },
             shape = RectangleShape,
             maxLines = 1,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Done,
-                keyboardType = KeyboardType.Phone
+                imeAction = ImeAction.Done, keyboardType = KeyboardType.Phone
             ),
             colors = customFieldsColors(),
             modifier = Modifier.fillMaxWidth()
@@ -485,8 +488,7 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
                 .background(
                     if (!enableState) MainGradient else Brush.linearGradient(
                         listOf(
-                            OrangeMain,
-                            OrangeMain
+                            OrangeMain, OrangeMain
                         )
                     )
                 ),
@@ -503,6 +505,9 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
         }
     }
 
+    if (countryPickerState) CountryPickerSheet(getCountries(LocalContext.current), dismiss = {
+        countryPickerState = false
+    }, onClick = {})
 }
 
 
