@@ -505,7 +505,7 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
         }
     }
 
-    if (countryPickerState) CountryPickerSheet(getCountries(LocalContext.current), dismiss = {
+    if (countryPickerState) CountryPickerSheet(dismiss = {
         countryPickerState = false
     }, onClick = {})
 }
