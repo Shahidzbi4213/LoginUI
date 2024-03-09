@@ -17,13 +17,11 @@ import kotlinx.coroutines.flow.stateIn
  * Created by Shahid Iqbal on 3/7/2024.
  */
 
-class SearchViewModel(application: Application) : AndroidViewModel(application) {
+class CountryViewModel(application: Application) : AndroidViewModel(application) {
 
     private var _searchText = MutableStateFlow("")
     val searchText get() = _searchText.asStateFlow()
 
-    private var _isSearching = MutableStateFlow(true)
-    val isSearching get() = _isSearching.asStateFlow()
 
     private var _countries = MutableStateFlow(getCountries(application))
 
@@ -40,7 +38,15 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
             _countries.value
         )
 
+    private var _selectedCountry =
+        MutableStateFlow(_countries.value.first { it.countryName == "Pakistan" })
 
+    val selectedCountry get() = _selectedCountry.asStateFlow()
+
+
+    fun updateSelectedCountry(countryItem: CountryItem){
+        _selectedCountry.value = countryItem
+    }
     fun updateSearch(query: String) {
         _searchText.value = query
     }

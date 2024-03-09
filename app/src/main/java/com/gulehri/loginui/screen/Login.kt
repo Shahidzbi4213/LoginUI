@@ -1,6 +1,5 @@
 package com.gulehri.loginui.screen
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
@@ -18,14 +17,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -37,11 +37,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,10 +48,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.OffsetEffect
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,9 +61,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
@@ -73,9 +75,9 @@ import com.gulehri.loginui.ui.theme.Header
 import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.OrangeMain
 import com.gulehri.loginui.ui.theme.TabUnSelected
+import com.gulehri.loginui.utils.CountryItem
 import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.gulehri.loginui.utils.customFieldsColors
-import com.gulehri.loginui.utils.getCountries
 import com.gulehri.loginui.utils.noRippleClickable
 import com.ramcosta.composedestinations.annotation.Destination
 
@@ -85,13 +87,18 @@ import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    countryViewModel: CountryViewModel = viewModel()
+) {
 
     val tabs = listOf(R.string.phone_number, R.string.email)
 
     var selectedTabIndex by remember {
         mutableIntStateOf(0)
     }
+
+    val country by countryViewModel.selectedCountry.collectAsStateWithLifecycle()
 
 
     Column(
@@ -154,7 +161,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         if (selectedTabIndex == 1) {
             LoginWithEmail(modifier = Modifier.fillMaxWidth())
         } else {
-            LoginWithPhone(modifier = Modifier.fillMaxWidth())
+            LoginWithPhone(modifier = Modifier.fillMaxWidth(), country)
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -394,7 +401,7 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoginWithPhone(modifier: Modifier = Modifier) {
+fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem) {
 
     var phone by rememberSaveable {
         mutableStateOf("")
@@ -442,20 +449,32 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
 
                 Row(
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.noRippleClickable {
+                        countryPickerState = !countryPickerState
+                    }
                 ) {
 
-                    Image(
-                        painter = painterResource(id = R.drawable.flag), contentDescription = null
+                    Text(
+                        text = country.countryFlag,
+                        style = Header.copy(fontSize = 16.sp),
+                        modifier = Modifier
+                            .shadow(
+                                0.5.dp,
+                                CircleShape
+                            )
+                            .background(Color.White, CircleShape)
+
+                            .padding(5.dp)
                     )
-                    Icon(painter = painterResource(id = R.drawable.more),
+                    Icon(
+                        painter = painterResource(id = R.drawable.more),
                         contentDescription = null,
                         modifier = Modifier
-                            .padding(horizontal = 7.dp)
+                            .size(24.dp)
+                            .padding(horizontal = 3.dp)
                             .padding(5.dp)
-                            .noRippleClickable {
-                                countryPickerState = !countryPickerState
-                            })
+                    )
                 }
             },
             shape = RectangleShape,
@@ -505,9 +524,8 @@ fun LoginWithPhone(modifier: Modifier = Modifier) {
         }
     }
 
-    if (countryPickerState) CountryPickerSheet(dismiss = {
-        countryPickerState = false
-    }, onClick = {})
+    if (countryPickerState)
+        CountryPickerSheet(dismiss = { countryPickerState = false })
 }
 
 

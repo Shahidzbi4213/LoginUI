@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -19,15 +19,13 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -39,7 +37,6 @@ import com.gulehri.loginui.R
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
-import com.gulehri.loginui.ui.theme.GrayUnSelected
 import com.gulehri.loginui.utils.CountryItem
 import com.gulehri.loginui.utils.noRippleClickable
 
@@ -84,25 +81,23 @@ fun SingleCountryItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryPickerSheet(
-    searchViewModel: SearchViewModel = viewModel(),
-    onClick: (CountryItem) -> Unit,
+    countryViewModel: CountryViewModel = viewModel(),
     dismiss: () -> Unit
 ) {
 
 
-    val countries by searchViewModel.countries.collectAsStateWithLifecycle()
-    val query by searchViewModel.searchText.collectAsStateWithLifecycle()
+    val countries by countryViewModel.countries.collectAsStateWithLifecycle()
+    val query by countryViewModel.searchText.collectAsStateWithLifecycle()
 
     ModalBottomSheet(
         onDismissRequest = dismiss,
         containerColor = Color.White,
-
-        ) {
+    ) {
 
         SearchBar(
             query = query,
-            onQueryChange = searchViewModel::updateSearch,
-            onSearch = searchViewModel::updateSearch,
+            onQueryChange = countryViewModel::updateSearch,
+            onSearch = countryViewModel::updateSearch,
             active = true,
             onActiveChange = {},
             trailingIcon = {
@@ -128,8 +123,9 @@ fun CountryPickerSheet(
 
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
-        ) {
+                .padding(10.dp),
+
+            ) {
 
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 16.dp),
@@ -137,10 +133,14 @@ fun CountryPickerSheet(
 
                 ) {
 
-                items(countries, key = { item: CountryItem -> item.countryName }) {
-                    SingleCountryItem(item = it) {
-                        onClick(it)
-                    }
+                items(countries, key = { item: CountryItem -> item.countryName })
+                {
+                    SingleCountryItem(item = it,
+                        onClick = {
+                            countryViewModel.updateSelectedCountry(countryItem = it)
+                            dismiss()
+                        })
+
                 }
             }
         }

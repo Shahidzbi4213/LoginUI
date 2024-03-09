@@ -57,7 +57,7 @@ data class OnboardItem(
     @DrawableRes val image: Int, @StringRes val title: Int, @StringRes val description: Int
 )
 
-val pagesList = listOf<OnboardItem>(
+val pagesList = listOf(
     OnboardItem(R.drawable.page1, R.string.page1_title, R.string.page1_description),
     OnboardItem(R.drawable.page2, R.string.page2_title, R.string.page2_description),
     OnboardItem(R.drawable.page3, R.string.page3_title, R.string.page3_description),
