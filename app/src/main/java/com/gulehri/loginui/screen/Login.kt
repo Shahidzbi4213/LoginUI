@@ -283,12 +283,12 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
     }
 
     var enableState by remember {
-        mutableStateOf(email.isNotBlank() && password.isNotEmpty())
+        mutableStateOf(email.isNotBlank() && password.isNotBlank())
     }
 
     LaunchedEffect(key1 = email, key2 = password) {
 
-        enableState = email.isNotEmpty() && password.isNotEmpty()
+        enableState = email.isNotBlank() && password.isNotBlank()
     }
 
     Column(
@@ -408,7 +408,7 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem) {
     }
 
     var enableState by remember {
-        mutableStateOf(phone.isNotEmpty())
+        mutableStateOf(phone.isNotBlank())
     }
 
     var countryPickerState by remember {
@@ -418,8 +418,7 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem) {
 
 
     LaunchedEffect(key1 = phone) {
-
-        enableState = phone.isNotEmpty()
+        enableState = phone.isNotBlank()
     }
 
     Column(
