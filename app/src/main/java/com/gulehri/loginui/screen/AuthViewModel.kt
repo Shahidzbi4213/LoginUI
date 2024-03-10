@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.stateIn
  * Created by Shahid Iqbal on 3/7/2024.
  */
 
-class CountryViewModel(application: Application) : AndroidViewModel(application) {
+class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private var _searchText = MutableStateFlow("")
     val searchText get() = _searchText.asStateFlow()

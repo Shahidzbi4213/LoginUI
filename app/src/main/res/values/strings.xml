@@ -24,6 +24,10 @@
     <string name="not_registered">Not Registered yet?</string>
     <string name="request_otp">Request OTP</string>
     <string name="search_country">Search Country</string>
+    <string name="otp_verfication">OTP Verification</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="otp_4_digits">An 4 digit code has been sent to</string>
+    <string name="phone_dummy">+923129944678</string>
 
 
     <string-array name="CountryCodes">

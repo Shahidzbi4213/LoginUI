@@ -8,6 +8,9 @@
       <entry key="LoginWithEmail">
         <State />
       </entry>
+      <entry key="OtpScreen">
+        <State />
+      </entry>
       <entry key="SplashScreen">
         <State />
       </entry>

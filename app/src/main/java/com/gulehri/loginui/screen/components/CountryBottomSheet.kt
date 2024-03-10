@@ -1,4 +1,4 @@
-package com.gulehri.loginui.screen;
+package com.gulehri.loginui.screen.components;
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -19,21 +18,17 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
+import com.gulehri.loginui.screen.AuthViewModel
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
@@ -81,13 +76,13 @@ fun SingleCountryItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryPickerSheet(
-    countryViewModel: CountryViewModel = viewModel(),
+    authViewModel: AuthViewModel = viewModel(),
     dismiss: () -> Unit
 ) {
 
 
-    val countries by countryViewModel.countries.collectAsStateWithLifecycle()
-    val query by countryViewModel.searchText.collectAsStateWithLifecycle()
+    val countries by authViewModel.countries.collectAsStateWithLifecycle()
+    val query by authViewModel.searchText.collectAsStateWithLifecycle()
 
     ModalBottomSheet(
         onDismissRequest = dismiss,
@@ -96,8 +91,8 @@ fun CountryPickerSheet(
 
         SearchBar(
             query = query,
-            onQueryChange = countryViewModel::updateSearch,
-            onSearch = countryViewModel::updateSearch,
+            onQueryChange = authViewModel::updateSearch,
+            onSearch = authViewModel::updateSearch,
             active = true,
             onActiveChange = {},
             trailingIcon = {
@@ -137,7 +132,7 @@ fun CountryPickerSheet(
                 {
                     SingleCountryItem(item = it,
                         onClick = {
-                            countryViewModel.updateSelectedCountry(countryItem = it)
+                            authViewModel.updateSelectedCountry(countryItem = it)
                             dismiss()
                         })
 

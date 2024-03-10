@@ -38,7 +38,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +47,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.OffsetEffect
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -66,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
+import com.gulehri.loginui.screen.components.CountryPickerSheet
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
@@ -89,7 +87,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    countryViewModel: CountryViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel()
 ) {
 
     val tabs = listOf(R.string.phone_number, R.string.email)
@@ -98,7 +96,7 @@ fun LoginScreen(
         mutableIntStateOf(0)
     }
 
-    val country by countryViewModel.selectedCountry.collectAsStateWithLifecycle()
+    val country by authViewModel.selectedCountry.collectAsStateWithLifecycle()
 
 
     Column(
