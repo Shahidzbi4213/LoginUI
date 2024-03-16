@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 /*
  * Created by Shahid Iqbal on 3/7/2024.
@@ -21,9 +24,12 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     private var _searchText = MutableStateFlow("")
     val searchText get() = _searchText.asStateFlow()
-
-
     private var _countries = MutableStateFlow(getCountries(application))
+
+
+    private var _otp  = MutableStateFlow("")
+    val otp get() = _otp.asStateFlow()
+
 
     val countries: StateFlow<List<CountryItem>> =
         searchText.combine(_countries) { query, countries ->
@@ -49,6 +55,13 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun updateSearch(query: String) {
         _searchText.value = query
+    }
+
+    fun updateOtp(value:Char)
+    {
+        _otp.update {
+            it.plus(value)
+        }
     }
 
 }

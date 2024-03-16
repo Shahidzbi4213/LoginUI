@@ -2,72 +2,77 @@ package com.gulehri.loginui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
 import com.gulehri.loginui.ui.theme.GrayUnSelected
 import com.gulehri.loginui.ui.theme.Header
+import com.ramcosta.composedestinations.annotation.Destination
 
 /*
  * Created by Shahid Iqbal on 3/10/2024.
  */
 
-@Preview(
-    showBackground = true, showSystemUi = true,
-    device = Devices.PIXEL_5
-)
+@Destination
 @Composable
-fun OtpScreen(modifier: Modifier = Modifier) {
+fun OtpScreen(
+    phoneNumber: String,
+    phoneCode: String,
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel = viewModel()
+) {
 
+    val otp by authViewModel.otp.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 10.dp)
+            .navigationBarsPadding()
+            .statusBarsPadding()
             .scrollable(rememberScrollState(), Orientation.Vertical),
     ) {
 
@@ -80,12 +85,9 @@ fun OtpScreen(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(
-                onClick = { }
-            ) {
+            IconButton(onClick = { }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null
                 )
             }
 
@@ -108,13 +110,20 @@ fun OtpScreen(modifier: Modifier = Modifier) {
                 .align(Alignment.CenterHorizontally)
         )
 
-        OTPBottomSection()
+        OTPBottomSection(phoneNumber, phoneCode, otp) {
+            authViewModel.updateOtp(it)
+        }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun OTPBottomSection() {
+fun OTPBottomSection(
+    phoneNumber: String,
+    phoneCode: String,
+    otp: String,
+    onUpdate: (Char) -> Unit
+) {
 
     Column(
         modifier = Modifier
@@ -135,8 +144,7 @@ fun OTPBottomSection() {
         Text(
             text = stringResource(id = R.string.otp_4_digits),
             style = Description.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 14.sp, fontWeight = FontWeight.SemiBold
             ),
             color = DescriptionColor.copy(alpha = 0.8f),
             modifier = Modifier
@@ -147,10 +155,9 @@ fun OTPBottomSection() {
         )
 
         Text(
-            text = stringResource(id = R.string.phone_dummy),
+            text = "(+$phoneCode) $phoneNumber",
             style = Description.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 14.sp, fontWeight = FontWeight.SemiBold
             ),
             color = DescriptionColor.copy(alpha = 0.8f),
             modifier = Modifier
@@ -166,12 +173,12 @@ fun OTPBottomSection() {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(top = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(top = 15.dp),
+            horizontalArrangement = Arrangement.spacedBy(15.dp)
         ) {
 
             repeat(4) {
-                OTPBox()
+                OTPBox(otp.getOrNull(it), onUpdate)
             }
         }
     }
@@ -179,20 +186,20 @@ fun OTPBottomSection() {
 
 
 @Composable
-fun OTPBox(modifier: Modifier = Modifier) {
+fun OTPBox(otp: Char?, onUpdate: (Char) -> Unit, modifier: Modifier = Modifier) {
 
     Box(
         modifier = modifier
-            .size(50.dp)
+            .size(55.dp)
             .shadow(
-                1.dp, shape = RoundedCornerShape(10.dp),
-                ambientColor = Color(0x33000000)
+                1.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color(0x33000000)
             )
             .clip(RoundedCornerShape(10.dp))
             .background(color = GrayUnSelected)
     ) {
         TextField(
-            value = "", onValueChange = {},
+            value = "$otp",
+            onValueChange = { onUpdate(it[0]) },
             textStyle = ButtonTextStyle,
             colors = TextFieldDefaults.colors(
                 focusedTextColor = Color.Black,

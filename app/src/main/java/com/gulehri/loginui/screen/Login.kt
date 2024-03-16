@@ -64,6 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
 import com.gulehri.loginui.screen.components.CountryPickerSheet
+import com.gulehri.loginui.screen.destinations.OtpScreenDestination
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
@@ -78,6 +79,7 @@ import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.gulehri.loginui.utils.customFieldsColors
 import com.gulehri.loginui.utils.noRippleClickable
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 /*
  * Created by Shahid Iqbal on 3/3/2024.
@@ -86,6 +88,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 @Destination
 @Composable
 fun LoginScreen(
+    navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel = viewModel()
 ) {
@@ -159,7 +162,9 @@ fun LoginScreen(
         if (selectedTabIndex == 1) {
             LoginWithEmail(modifier = Modifier.fillMaxWidth())
         } else {
-            LoginWithPhone(modifier = Modifier.fillMaxWidth(), country)
+            LoginWithPhone(modifier = Modifier.fillMaxWidth(), country) {
+                        navigator.navigate(OtpScreenDestination(it,country.phoneCode))
+            }
         }
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -399,7 +404,7 @@ fun LoginWithEmail(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem) {
+fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem, onClick: (String) -> Unit) {
 
     var phone by rememberSaveable {
         mutableStateOf("")
@@ -416,7 +421,7 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem) {
 
 
     LaunchedEffect(key1 = phone) {
-        enableState = phone.isNotBlank()
+        enableState = phone.isNotBlank() && phone.length >= 8
     }
 
     Column(
@@ -488,8 +493,9 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem) {
         Spacer(modifier = Modifier.height(40.dp))
 
 
+
         Button(
-            onClick = {},
+            onClick = {onClick(phone)},
             shape = RoundedCornerShape(10.dp),
             interactionSource = NoRippleInteractionSource(),
             colors = ButtonDefaults.buttonColors(
