@@ -1,6 +1,5 @@
 package com.gulehri.loginui.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -8,11 +7,8 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,25 +23,30 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.TextFieldLineLimits
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,13 +65,20 @@ import com.gulehri.loginui.ui.theme.DescriptionColor
 import com.gulehri.loginui.ui.theme.ErrorColor
 import com.gulehri.loginui.ui.theme.GrayUnSelected
 import com.gulehri.loginui.ui.theme.Header
+import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.OTPErrorColor
+import com.gulehri.loginui.ui.theme.OrangeMain
+import com.gulehri.loginui.utils.NoRippleInteractionSource
+import com.gulehri.loginui.utils.debug
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
 
 /*
  * Created by Shahid Iqbal on 3/10/2024.
  */
+
+const val OTP_LENGTH = 4
 
 @Destination
 @Composable
@@ -78,8 +86,8 @@ fun OtpScreen(
     phoneNumber: String,
     phoneCode: String,
     modifier: Modifier = Modifier,
-    navigator:DestinationsNavigator,
-    authViewModel: AuthViewModel = viewModel()
+    navigator: DestinationsNavigator,
+    authViewModel: AuthViewModel = viewModel(),
 ) {
 
 
@@ -141,8 +149,24 @@ fun OTPBottomSection(
 ) {
 
     val otp by authViewModel.otp.collectAsStateWithLifecycle()
-    val isOtpValid by remember {
-        mutableStateOf(!(otp.length == 4 && otp != "1998"))
+    val isOtpValid by authViewModel.isOtpValid.collectAsStateWithLifecycle()
+    val keyboardState = LocalSoftwareKeyboardController.current
+
+    var verifyOtp by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = verifyOtp) {
+
+        if (verifyOtp) {
+            delay(3000)
+            verifyOtp = false
+        }
+    }
+
+    LaunchedEffect(key1 = otp) {
+        if (otp.length == OTP_LENGTH)
+            keyboardState?.hide()
     }
 
 
@@ -163,7 +187,7 @@ fun OTPBottomSection(
         )
 
         Text(
-            text = stringResource(id = R.string.otp_4_digits),
+            text = stringResource(id = R.string.otp_4_digits, OTP_LENGTH),
             style = Description.copy(
                 fontSize = 14.sp, fontWeight = FontWeight.SemiBold
             ),
@@ -185,8 +209,6 @@ fun OTPBottomSection(
                 .wrapContentWidth()
                 .wrapContentHeight()
                 .padding(top = 5.dp)
-
-
         )
 
         OTPSection(
@@ -195,25 +217,87 @@ fun OTPBottomSection(
             isValid = isOtpValid
         )
 
-    /*    if (!isOtpValid) {
+        if (!isOtpValid) {
             Text(
                 text = stringResource(id = R.string.invalid_otp),
                 color = ErrorColor,
                 style = Description.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(top = 10.dp)
             )
-        }*/
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Button(
+            onClick = {
+                verifyOtp = true
+            },
+            shape = RoundedCornerShape(10.dp),
+            interactionSource = NoRippleInteractionSource(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.White,
+                contentColor = Color.White
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(
+                    if (!isOtpValid && !verifyOtp) MainGradient
+                    else Brush.linearGradient(
+                        listOf(
+                            OrangeMain, OrangeMain
+                        )
+                    )
+                ),
+            enabled = isOtpValid && otp.length == 4 && !verifyOtp
+
+        ) {
+
+            if (verifyOtp)
+                CircularProgressIndicator(
+                    color = Color.White,
+                    strokeCap = StrokeCap.Butt,
+                    strokeWidth = 3.dp,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+
+                )
+
+            Text(
+                text = stringResource(id = R.string.verif),
+                style = ButtonTextStyle,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 30.dp)
+            )
+
+        }
 
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(id = R.string.resend_otp),
+            style = Header.copy(fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp),
+            color = Color.Black,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally)
+            ,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
 
 @Composable
 fun OTPSection(
-    otpLength: Int = 4, otp: String, onUpdate: (String) -> Unit,
+    otpLength: Int = OTP_LENGTH, otp: String, onUpdate: (String) -> Unit,
     isValid: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
 
@@ -244,7 +328,7 @@ fun OTPSection(
 
                     Box(
                         modifier = modifier
-                            .size(55.dp)
+                            .size(65.dp)
                             .shadow(
                                 2.dp,
                                 shape = RoundedCornerShape(10.dp),

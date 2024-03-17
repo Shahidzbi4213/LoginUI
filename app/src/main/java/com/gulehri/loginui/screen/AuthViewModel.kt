@@ -33,6 +33,14 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private var _otp = MutableStateFlow("")
     val otp get() = _otp.asStateFlow()
 
+    val isOtpValid = otp.map {
+        when {
+            it.length < OTP_LENGTH -> true
+            it.length == OTP_LENGTH && it == "1998" -> true
+            it.length == OTP_LENGTH && otp.value!= "1998" -> false
+            else -> false
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily,true)
 
 
     val countries =
