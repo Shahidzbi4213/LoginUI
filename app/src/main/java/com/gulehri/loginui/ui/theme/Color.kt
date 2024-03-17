@@ -16,8 +16,9 @@ val OtpBoxColorSelected = Color(0xFFE5C0C0)
 val Black = Color(0xFF161616)
 val TabUnSelected = Color(0xFF4F4F4F)
 val DividerColor = Color(0xFFB6B6B6)
+val OTPErrorColor = Color(0xFFE5C0C0)
+val ErrorColor = Color(0xFFD70000)
 
 private val OrangeLight = Color(0xFFFF9B63)
 private val OrangeLDeep = Color(0xC9FF621F)
-
 val MainGradient = Brush.verticalGradient(listOf(OrangeLight, OrangeLight, OrangeLDeep))

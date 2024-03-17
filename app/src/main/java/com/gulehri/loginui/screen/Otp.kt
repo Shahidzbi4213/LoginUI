@@ -1,5 +1,6 @@
 package com.gulehri.loginui.screen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,40 +20,53 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
+import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
+import com.gulehri.loginui.ui.theme.ErrorColor
 import com.gulehri.loginui.ui.theme.GrayUnSelected
 import com.gulehri.loginui.ui.theme.Header
+import com.gulehri.loginui.ui.theme.OTPErrorColor
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 /*
  * Created by Shahid Iqbal on 3/10/2024.
@@ -62,10 +78,10 @@ fun OtpScreen(
     phoneNumber: String,
     phoneCode: String,
     modifier: Modifier = Modifier,
+    navigator:DestinationsNavigator,
     authViewModel: AuthViewModel = viewModel()
 ) {
 
-    val otp by authViewModel.otp.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -85,9 +101,12 @@ fun OtpScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            IconButton(onClick = { }) {
+            IconButton(onClick = {
+                navigator.popBackStack()
+            }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null
                 )
             }
 
@@ -110,20 +129,22 @@ fun OtpScreen(
                 .align(Alignment.CenterHorizontally)
         )
 
-        OTPBottomSection(phoneNumber, phoneCode, otp) {
-            authViewModel.updateOtp(it)
-        }
+        OTPBottomSection(phoneNumber, phoneCode, authViewModel)
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OTPBottomSection(
     phoneNumber: String,
     phoneCode: String,
-    otp: String,
-    onUpdate: (Char) -> Unit
+    authViewModel: AuthViewModel,
 ) {
+
+    val otp by authViewModel.otp.collectAsStateWithLifecycle()
+    val isOtpValid by remember {
+        mutableStateOf(!(otp.length == 4 && otp != "1998"))
+    }
+
 
     Column(
         modifier = Modifier
@@ -168,47 +189,94 @@ fun OTPBottomSection(
 
         )
 
+        OTPSection(
+            otp = otp,
+            onUpdate = authViewModel::updateOtp,
+            isValid = isOtpValid
+        )
 
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 15.dp),
-            horizontalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
+    /*    if (!isOtpValid) {
+            Text(
+                text = stringResource(id = R.string.invalid_otp),
+                color = ErrorColor,
+                style = Description.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(top = 10.dp)
+            )
+        }*/
 
-            repeat(4) {
-                OTPBox(otp.getOrNull(it), onUpdate)
-            }
-        }
+
     }
 }
 
 
 @Composable
-fun OTPBox(otp: Char?, onUpdate: (Char) -> Unit, modifier: Modifier = Modifier) {
+fun OTPSection(
+    otpLength: Int = 4, otp: String, onUpdate: (String) -> Unit,
+    isValid: Boolean,
+    modifier: Modifier = Modifier
+) {
 
-    Box(
-        modifier = modifier
-            .size(55.dp)
-            .shadow(
-                1.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color(0x33000000)
-            )
-            .clip(RoundedCornerShape(10.dp))
-            .background(color = GrayUnSelected)
-    ) {
-        TextField(
-            value = "$otp",
-            onValueChange = { onUpdate(it[0]) },
-            textStyle = ButtonTextStyle,
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            )
-        )
-    }
+
+    BasicTextField(
+        value = otp,
+        onValueChange = {
+            if (it.length <= otpLength) onUpdate(it)
+        },
+        modifier = modifier.padding(top = 25.dp),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Number
+        ),
+        singleLine = true,
+        maxLines = 1,
+        decorationBox = {
+
+            Row(
+                modifier = Modifier.wrapContentSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                repeat(otpLength) { index ->
+
+                    val otpCharacter = otp.getOrNull(index)?.toString() ?: ""
+
+
+                    Box(
+                        modifier = modifier
+                            .size(55.dp)
+                            .shadow(
+                                2.dp,
+                                shape = RoundedCornerShape(10.dp),
+                                ambientColor = Color(0x33000000)
+                            )
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(color = if (isValid) GrayUnSelected else OTPErrorColor),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+
+                        Text(
+                            text = otpCharacter,
+                            modifier = modifier
+                                .wrapContentWidth()
+                                .wrapContentHeight()
+                                .align(Alignment.Center),
+
+                            style = ButtonTextStyle.copy(
+                                fontWeight = FontWeight.Bold, fontSize = 24.sp
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                }
+            }
+        },
+        textStyle = ButtonTextStyle.copy(fontWeight = FontWeight.Bold, fontSize = 24.sp),
+        cursorBrush = SolidColor(Black)
+    )
+
+
 }

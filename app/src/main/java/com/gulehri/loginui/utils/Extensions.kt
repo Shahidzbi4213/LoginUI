@@ -1,6 +1,7 @@
 package com.gulehri.loginui.utils
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.TextFieldColors
@@ -21,6 +22,10 @@ fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     }
 }
 
+
+fun Any?.debug(tag: String = "findMe") {
+    Log.d(tag, "$this")
+}
 
 @Composable
 fun customFieldsColors() = TextFieldDefaults.colors(

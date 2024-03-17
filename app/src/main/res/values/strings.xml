@@ -28,6 +28,7 @@
     <string name="enter_otp">Enter OTP</string>
     <string name="otp_4_digits">An 4 digit code has been sent to</string>
     <string name="phone_dummy">+923129944678</string>
+    <string name="invalid_otp">Invalid or Incorrect OTP. Try Again</string>
 
 
     <string-array name="CountryCodes">
