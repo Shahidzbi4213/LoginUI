@@ -58,6 +58,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
+import com.gulehri.loginui.screen.destinations.DashboardScreenDestination
+import com.gulehri.loginui.screen.destinations.LoginScreenDestination
+import com.gulehri.loginui.screen.destinations.OtpScreenDestination
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
@@ -72,6 +75,7 @@ import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.gulehri.loginui.utils.debug
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import kotlinx.coroutines.delay
 
 /*
@@ -137,7 +141,13 @@ fun OtpScreen(
                 .align(Alignment.CenterHorizontally)
         )
 
-        OTPBottomSection(phoneNumber, phoneCode, authViewModel)
+        OTPBottomSection(phoneNumber, phoneCode, authViewModel){
+            navigator.navigate(DashboardScreenDestination){
+                popUpTo(LoginScreenDestination){
+                    inclusive = true
+                }
+            }
+        }
     }
 }
 
@@ -146,6 +156,7 @@ fun OTPBottomSection(
     phoneNumber: String,
     phoneCode: String,
     authViewModel: AuthViewModel,
+    onVerification:()->Unit
 ) {
 
     val otp by authViewModel.otp.collectAsStateWithLifecycle()
@@ -161,6 +172,7 @@ fun OTPBottomSection(
         if (verifyOtp) {
             delay(3000)
             verifyOtp = false
+            onVerification()
         }
     }
 
