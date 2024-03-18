@@ -20,5 +20,5 @@ val OTPErrorColor = Color(0xFFE5C0C0)
 val ErrorColor = Color(0xFFD70000)
 
 private val OrangeLight = Color(0xFFFF9B63)
-private val OrangeLDeep = Color(0xC9FF621F)
-val MainGradient = Brush.verticalGradient(listOf(OrangeLight, OrangeLight, OrangeLDeep))
+private val OrangeDeep = Color(0xC9FF621F)
+val MainGradient = Brush.verticalGradient(listOf(OrangeLight, OrangeLight, OrangeDeep))

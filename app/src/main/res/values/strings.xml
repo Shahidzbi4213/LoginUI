@@ -32,6 +32,7 @@
     <string name="verif">Verify</string>
     <string name="resend_otp">Resent OTP</string>
     <string name="welcome">Welcome Again</string>
+    <string name="web_client_id">1049429545538-cmiepsnifu3aeggtu3jetv90pphm4bd7.apps.googleusercontent.com</string>
 
 
     <string-array name="CountryCodes">

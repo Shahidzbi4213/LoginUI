@@ -1,4 +1,4 @@
-package com.gulehri.loginui.screen;
+package com.gulehri.loginui.ui.screens;
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -6,7 +6,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,8 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gulehri.loginui.R
-import com.gulehri.loginui.screen.destinations.LoginScreenDestination
-import com.gulehri.loginui.screen.destinations.OnBoardingScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.LoginScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.OnBoardingScreenDestination
+
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description

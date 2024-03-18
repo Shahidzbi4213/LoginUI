@@ -1,4 +1,4 @@
-package com.gulehri.loginui.screen;
+package com.gulehri.loginui.ui.screens;
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.gulehri.loginui.R
-import com.gulehri.loginui.screen.destinations.OnBoardingScreenDestination
-import com.gulehri.loginui.screen.destinations.SplashScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.OnBoardingScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.SplashScreenDestination
 import com.gulehri.loginui.ui.theme.Header
 import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.loginFontFamily
@@ -46,7 +46,8 @@ fun SplashScreen(navigator: DestinationsNavigator) {
     LaunchedEffect(key1 = Unit, block = {
         delay(3.seconds)
 
-        navigator.navigate(OnBoardingScreenDestination,
+        navigator.navigate(
+            OnBoardingScreenDestination,
             builder = { popUpTo(SplashScreenDestination) { inclusive = true } })
     })
 

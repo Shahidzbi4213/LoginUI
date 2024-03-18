@@ -1,5 +1,10 @@
-package com.gulehri.loginui.screen
+package com.gulehri.loginui.ui.screens
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
@@ -51,6 +56,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,9 +68,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInCredential
 import com.gulehri.loginui.R
-import com.gulehri.loginui.screen.components.CountryPickerSheet
-import com.gulehri.loginui.screen.destinations.OtpScreenDestination
+import com.gulehri.loginui.data.authentication.singInWithGoogle
+import com.gulehri.loginui.ui.components.CountryPickerSheet
+import com.gulehri.loginui.ui.screens.destinations.DashboardScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.OtpScreenDestination
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor
@@ -74,6 +84,7 @@ import com.gulehri.loginui.ui.theme.Header
 import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.OrangeMain
 import com.gulehri.loginui.ui.theme.TabUnSelected
+import com.gulehri.loginui.ui.viewmodel.AuthViewModel
 import com.gulehri.loginui.utils.CountryItem
 import com.gulehri.loginui.utils.NoRippleInteractionSource
 import com.gulehri.loginui.utils.customFieldsColors
@@ -90,7 +101,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun LoginScreen(
     navigator: DestinationsNavigator,
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel = viewModel(),
 ) {
 
     val tabs = listOf(R.string.phone_number, R.string.email)
@@ -99,7 +110,27 @@ fun LoginScreen(
         mutableIntStateOf(0)
     }
 
+    val context = LocalContext.current
+
+    val oneTapClient by remember {
+        mutableStateOf(Identity.getSignInClient(context))
+    }
+
     val country by authViewModel.selectedCountry.collectAsStateWithLifecycle()
+
+    var user by remember {
+        mutableStateOf<SignInCredential?>(null)
+    }
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) user =
+                oneTapClient.getSignInCredentialFromIntent(it.data)
+        }
+
+    LaunchedEffect(key1 = user) {
+        user?.let { navigator.navigate(DashboardScreenDestination(it)) }
+    }
 
 
     Column(
@@ -163,7 +194,7 @@ fun LoginScreen(
             LoginWithEmail(modifier = Modifier.fillMaxWidth())
         } else {
             LoginWithPhone(modifier = Modifier.fillMaxWidth(), country) {
-                        navigator.navigate(OtpScreenDestination(it,country.phoneCode))
+                navigator.navigate(OtpScreenDestination(it, country.phoneCode))
             }
         }
 
@@ -173,13 +204,19 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(50.dp))
 
-        LoginWithGoogleBtn()
+        LoginWithGoogleBtn {
+            singInWithGoogle(context = context, oneTapClient = oneTapClient, onSuccess = {
+                launcher.launch(IntentSenderRequest.Builder(it.pendingIntent).build())
+            }, onFailure = {
+                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+
+            })
+        }
 
         Spacer(modifier = Modifier.height(30.dp))
 
 
         CreateAccount(modifier = Modifier.fillMaxWidth())
-
 
     }
 }
@@ -208,10 +245,10 @@ fun CreateAccount(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LoginWithGoogleBtn() {
+fun LoginWithGoogleBtn(onClick: () -> Unit) {
 
     Card(
-        onClick = { },
+        onClick = onClick,
         interactionSource = NoRippleInteractionSource(),
         colors = CardDefaults.cardColors(
             contentColor = Color.Black, containerColor = Color.White
@@ -243,7 +280,6 @@ fun LoginWithGoogleBtn() {
             )
         }
     }
-
 }
 
 
@@ -449,21 +485,18 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem, onClick:
             ),
             leadingIcon = {
 
-                Row(
-                    horizontalArrangement = Arrangement.Center,
+                Row(horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.noRippleClickable {
                         countryPickerState = !countryPickerState
-                    }
-                ) {
+                    }) {
 
                     Text(
                         text = country.countryFlag,
                         style = Header.copy(fontSize = 16.sp),
                         modifier = Modifier
                             .shadow(
-                                0.5.dp,
-                                CircleShape
+                                0.5.dp, CircleShape
                             )
                             .background(Color.White, CircleShape)
 
@@ -495,7 +528,7 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem, onClick:
 
 
         Button(
-            onClick = {onClick(phone)},
+            onClick = { onClick(phone) },
             shape = RoundedCornerShape(10.dp),
             interactionSource = NoRippleInteractionSource(),
             colors = ButtonDefaults.buttonColors(
@@ -527,14 +560,13 @@ fun LoginWithPhone(modifier: Modifier = Modifier, country: CountryItem, onClick:
         }
     }
 
-    if (countryPickerState)
-        CountryPickerSheet(dismiss = { countryPickerState = false })
+    if (countryPickerState) CountryPickerSheet(dismiss = { countryPickerState = false })
 }
 
 
 @Composable
 fun RowScope.MyTab(
-    @StringRes text: Int, isSelected: Boolean, index: Int, onClick: (Int) -> Unit
+    @StringRes text: Int, isSelected: Boolean, index: Int, onClick: (Int) -> Unit,
 ) {
 
     val tabTextColor: Color by animateColorAsState(

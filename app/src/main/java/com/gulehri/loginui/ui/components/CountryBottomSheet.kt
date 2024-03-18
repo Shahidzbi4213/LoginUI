@@ -1,4 +1,4 @@
-package com.gulehri.loginui.screen.components;
+package com.gulehri.loginui.ui.components;
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
-import com.gulehri.loginui.screen.AuthViewModel
+import com.gulehri.loginui.ui.viewmodel.AuthViewModel
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.Description
 import com.gulehri.loginui.ui.theme.DescriptionColor

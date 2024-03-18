@@ -1,4 +1,4 @@
-package com.gulehri.loginui.screen
+package com.gulehri.loginui.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,9 +58,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gulehri.loginui.R
-import com.gulehri.loginui.screen.destinations.DashboardScreenDestination
-import com.gulehri.loginui.screen.destinations.LoginScreenDestination
-import com.gulehri.loginui.screen.destinations.OtpScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.DashboardScreenDestination
+import com.gulehri.loginui.ui.screens.destinations.LoginScreenDestination
+import com.gulehri.loginui.ui.viewmodel.AuthViewModel
 import com.gulehri.loginui.ui.theme.Black
 import com.gulehri.loginui.ui.theme.ButtonTextStyle
 import com.gulehri.loginui.ui.theme.Description
@@ -72,7 +72,6 @@ import com.gulehri.loginui.ui.theme.MainGradient
 import com.gulehri.loginui.ui.theme.OTPErrorColor
 import com.gulehri.loginui.ui.theme.OrangeMain
 import com.gulehri.loginui.utils.NoRippleInteractionSource
-import com.gulehri.loginui.utils.debug
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -142,7 +141,7 @@ fun OtpScreen(
         )
 
         OTPBottomSection(phoneNumber, phoneCode, authViewModel){
-            navigator.navigate(DashboardScreenDestination){
+            navigator.navigate(DashboardScreenDestination(null)){
                 popUpTo(LoginScreenDestination){
                     inclusive = true
                 }
